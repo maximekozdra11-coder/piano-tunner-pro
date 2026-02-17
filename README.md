@@ -2,6 +2,17 @@
 
 Application professionnelle de haute précision pour accorder un piano acoustique avec détection avancée de l'inharmonicité, calcul du stretch, analyse des battements et système de calibration persistant.
 
+## 💻 Compatibilité des plateformes
+
+**Piano Tuner Pro est une application desktop** compatible avec :
+- ✅ **Windows** (7, 10, 11)
+- ✅ **macOS** (10.14+)
+- ✅ **Linux** (Ubuntu, Debian, Fedora, etc.)
+
+**Note importante** : Cette application nécessite un ordinateur et ne fonctionne **pas nativement sur smartphone** (iOS/Android). 
+
+📱 **Vous voulez utiliser l'application depuis votre téléphone ?** Consultez le guide [MOBILE_ACCESS.md](MOBILE_ACCESS.md) qui explique comment accéder à l'application via bureau à distance.
+
 ## Fonctionnalités
 
 ### 🎵 Capture et analyse audio temps réel
@@ -61,8 +72,15 @@ Les dépendances incluent:
 
 ## Utilisation
 
-### Lancement de l'application
+### 🚀 Démarrage rapide
 
+**Première utilisation ?** Consultez le [Guide de démarrage rapide (QUICKSTART.md)](QUICKSTART.md)
+
+**Scripts de lancement automatique :**
+- **Linux/macOS** : `./launch.sh`
+- **Windows** : Double-cliquez sur `launch.bat`
+
+**Lancement manuel :**
 ```bash
 python main.py
 ```
