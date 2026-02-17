@@ -7,7 +7,16 @@ from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QSpinBox, QGroupBox, QDialog)
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QPainter, QColor, QPen, QFont
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
+# Import matplotlib backend with fallback for compatibility
+try:
+    from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+except ImportError:
+    try:
+        from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+    except ImportError:
+        raise ImportError("Could not import matplotlib Qt backend. Please install PyQt6 or PyQt5.")
+
 from matplotlib.figure import Figure
 
 

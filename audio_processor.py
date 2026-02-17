@@ -23,7 +23,9 @@ class AudioProcessor:
         Initialise le processeur audio.
         
         Args:
-            sample_rate (int): Fréquence d'échantillonnage en Hz (minimum 44100)
+            sample_rate (int): Fréquence d'échantillonnage en Hz (minimum 44100).
+                              Si une valeur inférieure est fournie, elle sera automatiquement
+                              ajustée à 44100 Hz.
             buffer_size (int): Taille de la fenêtre glissante (4096 ou 8192)
             callback (callable): Fonction appelée avec les nouvelles données audio
         """

@@ -65,7 +65,7 @@ class StretchModel:
             B = float(self.B_curve(midi_note))
             # S'assurer que B reste dans une plage réaliste
             return max(0, min(B, 0.001))
-        except:
+        except (ValueError, TypeError, KeyError) as e:
             return self._default_B(midi_note)
     
     def _default_B(self, midi_note):
