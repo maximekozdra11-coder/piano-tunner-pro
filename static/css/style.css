@@ -1,0 +1,401 @@
+/* Piano Tuner Pro - Mobile Styles */
+/* Optimisé pour iPhone 12 et autres smartphones */
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --bg-color: #0f172a;
+    --bg-card: #1e293b;
+    --text-color: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+.app-container {
+    max-width: 100%;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* Header */
+.app-header {
+    background: linear-gradient(135deg, var(--primary-color), #1e40af);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.app-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.status-indicator .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.connected .dot {
+    background-color: var(--success-color);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Main Tuning Section */
+.tuning-section {
+    padding: 1.5rem 1rem;
+}
+
+/* Note Display */
+.note-display {
+    text-align: center;
+    margin-bottom: 2rem;
+    background: var(--bg-card);
+    border-radius: 1rem;
+    padding: 2rem 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.note-name {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.note-octave {
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+/* Cents Meter */
+.cents-meter-container {
+    background: var(--bg-card);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#cents-meter {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+}
+
+.cents-value {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    color: var(--text-muted);
+}
+
+.cents-value.perfect {
+    color: var(--success-color);
+}
+
+.cents-value.close {
+    color: var(--warning-color);
+}
+
+.cents-value.far {
+    color: var(--danger-color);
+}
+
+/* Frequency Info */
+.frequency-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.freq-item {
+    background: var(--bg-card);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.freq-label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+.freq-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Spectrum Display */
+.spectrum-container {
+    background: var(--bg-card);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.spectrum-container h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+#spectrum-canvas {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+}
+
+/* Control Buttons */
+.control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-large {
+    padding: 1.25rem 2rem;
+    font-size: 1.25rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #1e40af);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+
+.btn-success {
+    background: var(--success-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+}
+
+/* Sections */
+section {
+    background: var(--bg-card);
+    border-radius: 1rem;
+    padding: 1.5rem 1rem;
+    margin: 0 1rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+/* Calibration */
+.calibration-status {
+    background: rgba(100, 116, 139, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.calibration-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Beat Analysis */
+.beat-controls {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.beat-controls label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.form-select {
+    flex: 1;
+    padding: 0.75rem;
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.beat-result {
+    background: rgba(100, 116, 139, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* Info Section */
+.info-section details {
+    cursor: pointer;
+}
+
+.info-section summary {
+    padding: 1rem;
+    background: rgba(100, 116, 139, 0.2);
+    border-radius: 0.5rem;
+    list-style: none;
+    user-select: none;
+}
+
+.info-section summary::-webkit-details-marker {
+    display: none;
+}
+
+.info-content {
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.info-content h3 {
+    font-size: 1rem;
+    margin: 1rem 0 0.5rem;
+    color: var(--text-color);
+}
+
+.info-content ol, .info-content ul {
+    padding-left: 1.5rem;
+}
+
+.info-content li {
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+}
+
+.info-content .green { color: var(--success-color); }
+.info-content .orange { color: var(--warning-color); }
+.info-content .red { color: var(--danger-color); }
+
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.app-footer .small {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+    .app-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    body {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .app-header {
+        padding-top: max(1.5rem, env(safe-area-inset-top));
+    }
+}
