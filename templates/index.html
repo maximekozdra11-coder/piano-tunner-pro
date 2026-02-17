@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Piano Tuner Pro - Mobile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>🎹 Piano Tuner Pro</h1>
+            <div class="status-indicator" id="status">
+                <span class="dot"></span>
+                <span id="status-text">Déconnecté</span>
+            </div>
+        </header>
+
+        <!-- Main Tuning Display -->
+        <main class="tuning-section">
+            <!-- Note Display -->
+            <div class="note-display">
+                <div class="note-name" id="note-name">--</div>
+                <div class="note-octave" id="note-octave"></div>
+            </div>
+
+            <!-- Cents Meter -->
+            <div class="cents-meter-container">
+                <canvas id="cents-meter" width="350" height="120"></canvas>
+                <div class="cents-value" id="cents-value">-- cents</div>
+            </div>
+
+            <!-- Frequency Info -->
+            <div class="frequency-info">
+                <div class="freq-item">
+                    <span class="freq-label">Mesurée</span>
+                    <span class="freq-value" id="freq-measured">-- Hz</span>
+                </div>
+                <div class="freq-item">
+                    <span class="freq-label">Cible</span>
+                    <span class="freq-value" id="freq-target">-- Hz</span>
+                </div>
+            </div>
+
+            <!-- Spectrum Display -->
+            <div class="spectrum-container">
+                <h3>Spectre audio</h3>
+                <canvas id="spectrum-canvas" width="350" height="150"></canvas>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="control-buttons">
+                <button id="start-btn" class="btn btn-primary btn-large">
+                    <span class="btn-icon">🎤</span>
+                    Démarrer
+                </button>
+                <button id="stop-btn" class="btn btn-secondary btn-large" style="display: none;">
+                    <span class="btn-icon">⏹</span>
+                    Arrêter
+                </button>
+            </div>
+        </main>
+
+        <!-- Calibration Section -->
+        <section class="calibration-section">
+            <h2>⚙️ Calibration</h2>
+            <div class="calibration-status" id="calib-status">
+                Pas de calibration active
+            </div>
+            <div class="calibration-buttons">
+                <button id="calib-start-btn" class="btn btn-outline">Démarrer calibration</button>
+                <button id="calib-stop-btn" class="btn btn-outline" style="display: none;">Arrêter calibration</button>
+                <button id="calib-save-btn" class="btn btn-success" style="display: none;">Sauvegarder note</button>
+            </div>
+        </section>
+
+        <!-- Beat Analysis Section -->
+        <section class="beat-section">
+            <h2>🔊 Analyse des battements</h2>
+            <div class="beat-controls">
+                <label for="partial-select">Partiel:</label>
+                <select id="partial-select" class="form-select">
+                    <option value="1">1 (fondamentale)</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <button id="analyze-beats-btn" class="btn btn-outline">Analyser</button>
+            </div>
+            <div class="beat-result" id="beat-result">
+                Aucune analyse
+            </div>
+        </section>
+
+        <!-- Info Section -->
+        <section class="info-section">
+            <details>
+                <summary>ℹ️ Instructions</summary>
+                <div class="info-content">
+                    <h3>Comment utiliser:</h3>
+                    <ol>
+                        <li>Cliquez sur <strong>"Démarrer"</strong></li>
+                        <li>Autorisez l'accès au microphone</li>
+                        <li>Jouez une note sur votre piano</li>
+                        <li>Observez l'écart en cents</li>
+                        <li>Ajustez jusqu'à <span class="green">0 cents</span></li>
+                    </ol>
+                    <h3>Code couleur:</h3>
+                    <ul>
+                        <li><span class="green">●</span> Vert: < 5 cents (parfait)</li>
+                        <li><span class="orange">●</span> Orange: < 15 cents (proche)</li>
+                        <li><span class="red">●</span> Rouge: > 15 cents (ajuster)</li>
+                    </ul>
+                </div>
+            </details>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Piano Tuner Pro v2.0 - Web Edition</p>
+            <p class="small">Optimisé pour iPhone 12</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/audio-processor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui-controller.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

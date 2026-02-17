@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Piano Tuner Pro - Standalone</title>
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+
+        .status-dot.active {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Note Display */
+        .note-display {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .note-name {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .note-octave {
+            font-size: 1.5rem;
+            color: var(--muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Cents Meter */
+        .cents-meter {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        #cents-canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .cents-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            color: var(--muted);
+        }
+
+        .cents-value.perfect { color: var(--success); }
+        .cents-value.close { color: var(--warning); }
+        .cents-value.far { color: var(--danger); }
+
+        /* Frequency Info */
+        .freq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .freq-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.75rem;
+        }
+
+        .freq-label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .freq-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Spectrum */
+        #spectrum-canvas {
+            display: block;
+            width: 100%;
+            height: 150px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 0.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        }
+
+        .btn-secondary {
+            background: var(--muted);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Details */
+        details {
+            margin-top: 1rem;
+        }
+
+        summary {
+            padding: 1rem;
+            background: rgba(100,116,139,0.2);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        details[open] summary {
+            margin-bottom: 1rem;
+        }
+
+        .info-content {
+            padding: 0 1rem;
+        }
+
+        .info-content h3 {
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .info-content ul {
+            padding-left: 1.5rem;
+        }
+
+        .info-content li {
+            margin-bottom: 0.5rem;
+            color: var(--muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🎹 Piano Tuner Pro</h1>
+        <div class="status">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Prêt</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Note Display -->
+        <div class="card note-display">
+            <div class="note-name" id="note-name">--</div>
+            <div class="note-octave" id="note-octave"></div>
+        </div>
+
+        <!-- Cents Meter -->
+        <div class="card cents-meter">
+            <canvas id="cents-canvas" width="350" height="120"></canvas>
+            <div class="cents-value" id="cents-value">-- cents</div>
+        </div>
+
+        <!-- Frequency Info -->
+        <div class="card">
+            <div class="freq-grid">
+                <div class="freq-item">
+                    <span class="freq-label">Mesurée</span>
+                    <span class="freq-value" id="freq-measured">-- Hz</span>
+                </div>
+                <div class="freq-item">
+                    <span class="freq-label">Cible</span>
+                    <span class="freq-value" id="freq-target">-- Hz</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spectrum -->
+        <div class="card">
+            <h3 style="margin-bottom: 1rem; color: var(--muted);">Spectre audio</h3>
+            <canvas id="spectrum-canvas"></canvas>
+        </div>
+
+        <!-- Controls -->
+        <div class="card">
+            <button class="btn btn-primary" id="start-btn">
+                <span style="font-size: 1.5rem;">🎤</span>
+                Démarrer
+            </button>
+            <button class="btn btn-secondary" id="stop-btn" style="display: none;">
+                <span style="font-size: 1.5rem;">⏹</span>
+                Arrêter
+            </button>
+        </div>
+
+        <!-- Info -->
+        <div class="card">
+            <details>
+                <summary>ℹ️ Instructions</summary>
+                <div class="info-content">
+                    <h3>Comment utiliser:</h3>
+                    <ul>
+                        <li>Cliquez sur <strong>"Démarrer"</strong></li>
+                        <li>Autorisez l'accès au microphone</li>
+                        <li>Jouez une note sur votre piano</li>
+                        <li>Observez l'écart en cents</li>
+                        <li>Ajustez jusqu'à obtenir 0 cents</li>
+                    </ul>
+                    <h3>Code couleur:</h3>
+                    <ul>
+                        <li style="color: var(--success);">● Vert: < 5 cents (parfait)</li>
+                        <li style="color: var(--warning);">● Orange: < 15 cents (proche)</li>
+                        <li style="color: var(--danger);">● Rouge: > 15 cents (ajuster)</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Piano Tuner Pro - Standalone Edition</p>
+        <p style="font-size: 0.75rem;">100% Client-Side • No Server Required</p>
+    </div>
+
+    <script>
+        // ============================================================================
+        // PIANO TUNER PRO - STANDALONE VERSION
+        // All algorithms implemented in JavaScript (no server needed)
+        // ============================================================================
+
+        class PianoTuner {
+            constructor() {
+                this.sampleRate = 44100;
+                this.bufferSize = 8192;
+                this.audioContext = null;
+                this.analyser = null;
+                this.processor = null;
+                this.mediaStream = null;
+                this.isRunning = false;
+                this.audioBuffer = [];
+                
+                // UI Elements
+                this.elements = {
+                    statusDot: document.getElementById('status-dot'),
+                    statusText: document.getElementById('status-text'),
+                    noteName: document.getElementById('note-name'),
+                    noteOctave: document.getElementById('note-octave'),
+                    centsValue: document.getElementById('cents-value'),
+                    freqMeasured: document.getElementById('freq-measured'),
+                    freqTarget: document.getElementById('freq-target'),
+                    startBtn: document.getElementById('start-btn'),
+                    stopBtn: document.getElementById('stop-btn'),
+                    centsCanvas: document.getElementById('cents-canvas'),
+                    spectrumCanvas: document.getElementById('spectrum-canvas')
+                };
+                
+                // Setup canvases
+                this.setupCanvases();
+                
+                // Bind event listeners
+                this.elements.startBtn.addEventListener('click', () => this.start());
+                this.elements.stopBtn.addEventListener('click', () => this.stop());
+            }
+
+            setupCanvases() {
+                const dpr = window.devicePixelRatio || 1;
+                
+                // Cents canvas
+                const centsCanvas = this.elements.centsCanvas;
+                const centsRect = centsCanvas.getBoundingClientRect();
+                centsCanvas.width = centsRect.width * dpr;
+                centsCanvas.height = centsRect.height * dpr;
+                const centsCtx = centsCanvas.getContext('2d');
+                centsCtx.scale(dpr, dpr);
+                
+                // Spectrum canvas
+                const specCanvas = this.elements.spectrumCanvas;
+                const specRect = specCanvas.getBoundingClientRect();
+                specCanvas.width = specRect.width * dpr;
+                specCanvas.height = specRect.height * dpr;
+                const specCtx = specCanvas.getContext('2d');
+                specCtx.scale(dpr, dpr);
+            }
+
+            async start() {
+                try {
+                    this.updateStatus('Initialisation...', false);
+                    
+                    // Request microphone access
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.audioContext = new AudioContext({ sampleRate: this.sampleRate });
+                    
+                    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: false
+                        }
+                    });
+                    
+                    // Create audio graph
+                    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 2048;
+                    
+                    this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+                    
+                    source.connect(this.analyser);
+                    this.analyser.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+                    
+                    // Process audio
+                    this.processor.onaudioprocess = (e) => {
+                        if (!this.isRunning) return;
+                        
+                        const inputData = e.inputBuffer.getChannelData(0);
+                        this.audioBuffer.push(...inputData);
+                        
+                        if (this.audioBuffer.length > this.bufferSize) {
+                            this.audioBuffer = this.audioBuffer.slice(-this.bufferSize);
+                        }
+                        
+                        if (this.audioBuffer.length >= 4096) {
+                            this.analyzeAudio(this.audioBuffer);
+                        }
+                    };
+                    
+                    this.isRunning = true;
+                    this.updateStatus('En cours...', true);
+                    this.elements.startBtn.style.display = 'none';
+                    this.elements.stopBtn.style.display = 'flex';
+                    
+                } catch (error) {
+                    alert('Erreur: ' + error.message + '\n\nAutorisez l\'accès au microphone.');
+                    this.updateStatus('Erreur', false);
+                }
+            }
+
+            stop() {
+                this.isRunning = false;
+                
+                if (this.processor) {
+                    this.processor.disconnect();
+                }
+                if (this.analyser) {
+                    this.analyser.disconnect();
+                }
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+                
+                this.audioBuffer = [];
+                this.updateStatus('Arrêté', false);
+                this.elements.startBtn.style.display = 'flex';
+                this.elements.stopBtn.style.display = 'none';
+            }
+
+            analyzeAudio(buffer) {
+                // YIN pitch detection
+                const frequency = this.detectPitchYIN(buffer);
+                
+                if (!frequency || frequency < 20 || frequency > 5000) {
+                    return;
+                }
+                
+                // Get MIDI note
+                const midiNote = this.frequencyToMIDI(frequency);
+                const noteName = this.midiToNoteName(midiNote);
+                
+                // Calculate target frequency with stretch
+                const targetFreq = this.getTargetFrequency(midiNote);
+                
+                // Calculate cents deviation
+                const cents = this.calculateCents(frequency, targetFreq);
+                
+                // Update UI
+                this.updateUI(noteName, frequency, targetFreq, cents);
+                
+                // Draw spectrum
+                this.drawSpectrum();
+            }
+
+            // ========================================================================
+            // YIN PITCH DETECTION ALGORITHM
+            // ========================================================================
+            detectPitchYIN(buffer) {
+                const threshold = 0.1;
+                const bufferSize = buffer.length;
+                const halfSize = Math.floor(bufferSize / 2);
+                
+                // Normalize
+                const mean = buffer.reduce((a, b) => a + b, 0) / buffer.length;
+                const normalized = buffer.map(v => v - mean);
+                
+                // Difference function
+                const diff = new Float32Array(halfSize);
+                for (let tau = 1; tau < halfSize; tau++) {
+                    let sum = 0;
+                    for (let i = 0; i < halfSize; i++) {
+                        const delta = normalized[i] - normalized[i + tau];
+                        sum += delta * delta;
+                    }
+                    diff[tau] = sum;
+                }
+                
+                // CMNDF
+                const cmndf = new Float32Array(halfSize);
+                cmndf[0] = 1;
+                let runningSum = 0;
+                
+                for (let tau = 1; tau < halfSize; tau++) {
+                    runningSum += diff[tau];
+                    cmndf[tau] = runningSum === 0 ? 1 : diff[tau] * tau / runningSum;
+                }
+                
+                // Find first minimum below threshold
+                let tau = 2;
+                while (tau < halfSize) {
+                    if (cmndf[tau] < threshold) {
+                        while (tau + 1 < halfSize && cmndf[tau + 1] < cmndf[tau]) {
+                            tau++;
+                        }
+                        break;
+                    }
+                    tau++;
+                }
+                
+                if (tau >= halfSize - 1) {
+                    return null;
+                }
+                
+                // Parabolic interpolation
+                if (tau > 0 && tau < halfSize - 1) {
+                    const x0 = tau - 1, x1 = tau, x2 = tau + 1;
+                    const y0 = cmndf[x0], y1 = cmndf[x1], y2 = cmndf[x2];
+                    const denom = 2 * (2 * y1 - y0 - y2);
+                    if (Math.abs(denom) > 1e-10) {
+                        tau = tau + (y2 - y0) / denom;
+                    }
+                }
+                
+                return this.sampleRate / tau;
+            }
+
+            // ========================================================================
+            // MIDI & FREQUENCY CONVERSIONS
+            // ========================================================================
+            frequencyToMIDI(freq) {
+                return Math.round(69 + 12 * Math.log2(freq / 440.0));
+            }
+
+            midiToFrequency(midi) {
+                return 440.0 * Math.pow(2, (midi - 69) / 12.0);
+            }
+
+            midiToNoteName(midi) {
+                const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                const octave = Math.floor(midi / 12) - 1;
+                const note = notes[midi % 12];
+                return note + octave;
+            }
+
+            // ========================================================================
+            // STRETCH MODEL (simplified - using default B values)
+            // ========================================================================
+            getTargetFrequency(midiNote) {
+                const equalTemp = this.midiToFrequency(midiNote);
+                const B = this.getDefaultB(midiNote);
+                const stretch = (B * 1 * 1) / 2.0; // k=1 for fundamental
+                return equalTemp * (1 + stretch);
+            }
+
+            getDefaultB(midiNote) {
+                // Approximation: B increases in bass and treble
+                const center = 69; // A4
+                const distance = Math.abs(midiNote - center);
+                const B_min = 0.0001;
+                const B_max = 0.0005;
+                return B_min + (B_max - B_min) * Math.pow(distance / 40.0, 2);
+            }
+
+            calculateCents(measuredFreq, targetFreq) {
+                if (measuredFreq <= 0 || targetFreq <= 0) return 0;
+                return 1200 * Math.log2(measuredFreq / targetFreq);
+            }
+
+            // ========================================================================
+            // UI UPDATE
+            // ========================================================================
+            updateUI(noteName, measuredFreq, targetFreq, cents) {
+                // Note
+                const match = noteName.match(/^([A-G]#?)(-?\d+)$/);
+                if (match) {
+                    this.elements.noteName.textContent = match[1];
+                    this.elements.noteOctave.textContent = `Octave ${match[2]}`;
+                } else {
+                    this.elements.noteName.textContent = noteName;
+                    this.elements.noteOctave.textContent = '';
+                }
+                
+                // Frequencies
+                this.elements.freqMeasured.textContent = measuredFreq.toFixed(2) + ' Hz';
+                this.elements.freqTarget.textContent = targetFreq.toFixed(2) + ' Hz';
+                
+                // Cents
+                const centsText = (cents > 0 ? '+' : '') + cents.toFixed(1) + ' cents';
+                this.elements.centsValue.textContent = centsText;
+                
+                // Color code
+                this.elements.centsValue.classList.remove('perfect', 'close', 'far');
+                if (Math.abs(cents) < 5) {
+                    this.elements.centsValue.classList.add('perfect');
+                } else if (Math.abs(cents) < 15) {
+                    this.elements.centsValue.classList.add('close');
+                } else {
+                    this.elements.centsValue.classList.add('far');
+                }
+                
+                // Draw cents meter
+                this.drawCentsMeter(cents);
+            }
+
+            drawCentsMeter(cents) {
+                const canvas = this.elements.centsCanvas;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.getBoundingClientRect().width;
+                const height = canvas.getBoundingClientRect().height;
+                
+                cents = Math.max(-50, Math.min(50, cents));
+                
+                ctx.clearRect(0, 0, width, height);
+                
+                // Background
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(0, 0, width, height);
+                
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const meterWidth = width - 60;
+                const startX = 30;
+                
+                // Baseline
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(startX, centerY);
+                ctx.lineTo(startX + meterWidth, centerY);
+                ctx.stroke();
+                
+                // Graduations
+                ctx.font = '12px -apple-system, sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                ctx.textAlign = 'center';
+                
+                for (let c = -50; c <= 50; c += 25) {
+                    const x = centerX + (c / 50) * (meterWidth / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(x, centerY - 10);
+                    ctx.lineTo(x, centerY + 10);
+                    ctx.stroke();
+                    ctx.fillText(c > 0 ? `+${c}` : c, x, centerY + 28);
+                }
+                
+                // Center line
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - 15);
+                ctx.lineTo(centerX, centerY + 15);
+                ctx.stroke();
+                
+                // Needle
+                const needleX = centerX + (cents / 50) * (meterWidth / 2);
+                let needleColor;
+                if (Math.abs(cents) < 5) {
+                    needleColor = '#10b981';
+                } else if (Math.abs(cents) < 15) {
+                    needleColor = '#f59e0b';
+                } else {
+                    needleColor = '#ef4444';
+                }
+                
+                ctx.strokeStyle = needleColor;
+                ctx.fillStyle = needleColor;
+                ctx.lineWidth = 3;
+                
+                ctx.beginPath();
+                ctx.moveTo(needleX, centerY - 25);
+                ctx.lineTo(needleX, centerY + 25);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.arc(needleX, centerY, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            drawSpectrum() {
+                if (!this.analyser) return;
+                
+                const canvas = this.elements.spectrumCanvas;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.getBoundingClientRect().width;
+                const height = canvas.getBoundingClientRect().height;
+                
+                const bufferLength = this.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.fillRect(0, 0, width, height);
+                
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                const sliceWidth = width / (bufferLength / 4);
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength / 4; i++) {
+                    const v = dataArray[i] / 255.0;
+                    const y = height - (v * height * 0.8) - 10;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                ctx.stroke();
+            }
+
+            updateStatus(text, active) {
+                this.elements.statusText.textContent = text;
+                if (active) {
+                    this.elements.statusDot.classList.add('active');
+                } else {
+                    this.elements.statusDot.classList.remove('active');
+                }
+            }
+        }
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.tuner = new PianoTuner();
+            console.log('Piano Tuner Pro - Standalone version initialized');
+        });
+    </script>
+</body>
+</html>
