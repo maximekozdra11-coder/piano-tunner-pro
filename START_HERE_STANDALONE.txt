@@ -1,0 +1,143 @@
+═══════════════════════════════════════════════════════════════════
+             🎹 PIANO TUNER PRO - STANDALONE 🎹
+                SOLUTION LA PLUS RAPIDE !
+═══════════════════════════════════════════════════════════════════
+
+📱 VOTRE SITUATION
+───────────────────────────────────────────────────────────────────
+Vous ne pouvez pas accéder au serveur Flask avec votre iPhone.
+
+✅ SOLUTION : Application Web Standalone
+───────────────────────────────────────────────────────────────────
+Un seul fichier HTML qui fonctionne 100% dans Safari iPhone.
+Pas de serveur, pas de PC, pas de configuration !
+
+
+🚀 COMMENT UTILISER (2 OPTIONS)
+═══════════════════════════════════════════════════════════════════
+
+OPTION 1: GitHub Pages (RECOMMANDÉ) ⭐
+───────────────────────────────────────────────────────────────────
+
+1. Sur iPhone, ouvrez Safari
+
+2. Allez à cette URL:
+   https://maximekozdra11-coder.github.io/piano-tunner-pro/standalone.html
+
+3. Cliquez "Démarrer"
+
+4. Autorisez microphone
+
+5. Accordez votre piano !
+
+Note: Si l'URL ne fonctionne pas encore, activez GitHub Pages:
+  - Repo → Settings → Pages → Source: main → Save
+  - Attendez 2-3 minutes
+
+
+OPTION 2: Fichier Local
+───────────────────────────────────────────────────────────────────
+
+1. Téléchargez standalone.html sur iPhone
+   (iCloud, AirDrop, email, etc.)
+
+2. Ouvrez avec Safari
+
+3. Autorisez microphone
+
+4. Utilisez !
+
+
+💡 AJOUT À L'ÉCRAN D'ACCUEIL
+═══════════════════════════════════════════════════════════════════
+
+Pour utiliser comme une vraie app:
+
+1. Dans Safari, cliquez Partager (⬆️)
+2. "Sur l'écran d'accueil"
+3. Nommez "Piano Tuner"
+4. L'icône apparaît !
+
+
+📦 FICHIER CRÉÉ
+═══════════════════════════════════════════════════════════════════
+
+standalone.html (27 KB)
+  ├─ Interface complète
+  ├─ Algorithme YIN en JavaScript
+  ├─ Calculs MIDI/fréquence
+  ├─ Curseur de cents
+  ├─ Spectre temps réel
+  └─ Capture audio iPhone
+
+UN SEUL FICHIER = TOUT L'ACCORDEUR !
+
+
+✨ FONCTIONNALITÉS
+═══════════════════════════════════════════════════════════════════
+
+✓ Détection hauteur (YIN)
+✓ Note + Octave
+✓ Fréquence mesurée/cible
+✓ Écart en cents
+✓ Curseur ±50 cents
+✓ Code couleur 🟢🟠🔴
+✓ Spectre audio
+✓ Fonctionne OFFLINE
+✓ Pas de dépendances
+
+
+⚡ AVANTAGES
+═══════════════════════════════════════════════════════════════════
+
+VS Desktop:     Pas besoin de PC
+VS Flask:       Pas besoin de serveur
+VS App Native:  Pas besoin d'installation
+
+Installation:   30 secondes vs 15 minutes
+Complexité:     Aucune vs Élevée
+Offline:        OUI vs Non (Flask)
+
+
+🎯 UTILISATION
+═══════════════════════════════════════════════════════════════════
+
+1. Ouvrir app
+2. Cliquer "Démarrer"
+3. Positionner iPhone (30-50 cm du piano)
+4. Jouer une note
+5. Observer aiguille:
+   🟢 < 5 cents   → Parfait
+   🟠 < 15 cents  → Proche
+   🔴 > 15 cents  → Ajuster
+
+
+📚 DOCUMENTATION
+═══════════════════════════════════════════════════════════════════
+
+README_STANDALONE.md  - Guide complet (8 KB)
+standalone.html       - Application (27 KB)
+
+
+🎉 RÉSULTAT
+═══════════════════════════════════════════════════════════════════
+
+Accordeur de piano professionnel:
+  ✓ Sur votre iPhone 12
+  ✓ Sans PC
+  ✓ Sans serveur
+  ✓ Sans installation
+  ✓ En 30 secondes
+  ✓ Offline
+  ✓ Gratuit
+
+
+⚡ COMMENCER MAINTENANT
+═══════════════════════════════════════════════════════════════════
+
+Safari iPhone →
+https://maximekozdra11-coder.github.io/piano-tunner-pro/standalone.html
+
+🎹 Bon accordage ! 📱✨
+
+═══════════════════════════════════════════════════════════════════
