@@ -32,12 +32,17 @@ class StretchModel:
         self.midi_notes = np.array(midi_notes)
         self.B_values = np.array(B_values)
         
-        # Créer une fonction d'interpolation (spline cubique)
-        # Utiliser 'linear' pour éviter les oscillations, ou 'cubic' pour plus de douceur
+        # Créer une fonction d'interpolation
+        # Utiliser 'linear' si peu de points, 'cubic' si suffisamment de points
+        if len(midi_notes) >= 4:
+            kind = 'cubic'
+        else:
+            kind = 'linear'
+        
         self.B_curve = interp1d(
             self.midi_notes, 
             self.B_values, 
-            kind='cubic',
+            kind=kind,
             bounds_error=False,
             fill_value='extrapolate'
         )

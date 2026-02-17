@@ -2,8 +2,15 @@
 AudioProcessor - Gestion du flux audio avec sounddevice
 """
 import numpy as np
-import sounddevice as sd
 from collections import deque
+
+try:
+    import sounddevice as sd
+    SOUNDDEVICE_AVAILABLE = True
+except (OSError, ImportError) as e:
+    SOUNDDEVICE_AVAILABLE = False
+    print(f"Warning: sounddevice not available: {e}")
+    print("Audio capture will not work, but other modules can be tested.")
 
 
 class AudioProcessor:
@@ -56,6 +63,9 @@ class AudioProcessor:
     
     def start(self):
         """Démarre la capture audio."""
+        if not SOUNDDEVICE_AVAILABLE:
+            raise RuntimeError("sounddevice is not available. Please install PortAudio.")
+        
         if self.is_running:
             return
         
