@@ -55,7 +55,7 @@ class PitchDetector:
         # Convertir tau en fréquence
         frequency = self.sample_rate / tau
         
-        # Filtrer les fréquences non réalistes pour un piano (27.5 Hz - 4186 Hz)
+        # Filtrer les fréquences non réalistes pour un piano (27.5 Hz - 3520 Hz)
         if frequency < 20 or frequency > 5000:
             return None
         

@@ -754,7 +754,7 @@
                 // Convert to frequency
                 const frequency = this.sampleRate / betterTau;
                 
-                // Filter unrealistic frequencies for piano (27.5 Hz - 4186 Hz)
+                // Filter unrealistic frequencies for piano (27.5 Hz - 3520 Hz)
                 if (frequency < 20 || frequency > 5000) return null;
                 
                 return frequency;
