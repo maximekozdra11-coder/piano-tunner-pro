@@ -1,17 +1,16 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: './',
+  base: process.env.NODE_ENV === 'production' ? '/piano-tunner-pro/' : './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: true,
+    sourcemap: false,
+    minify: 'esbuild',
+    target: 'es2015',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'audio-engine': ['./src/audio/audioEngine.js'],
-          'math-engine': ['./src/math/inharmonicity.js', './src/math/stretchTuning.js']
-        }
+        manualChunks: undefined
       }
     }
   },
