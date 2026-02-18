@@ -1398,18 +1398,20 @@
                 for (const name of names) {
                     const profile = this.profiles[name];
                     const isActive = this.activeProfile && this.activeProfile.name === name;
+                    // Escape HTML to prevent XSS
+                    const escapedName = this.escapeHtml(name);
                     
                     html += `
-                        <div class="profile-item ${isActive ? 'active' : ''}" data-name="${name}">
+                        <div class="profile-item ${isActive ? 'active' : ''}" data-profile-name="${escapedName}">
                             <div class="profile-info">
-                                <div class="profile-name">${name}</div>
+                                <div class="profile-name">${escapedName}</div>
                                 <div class="profile-date">${profile.date} - ${profile.calibration.length} notes</div>
                             </div>
                             <div>
-                                <button class="btn btn-small btn-primary" onclick="tuner.loadProfile('${name}')">
+                                <button class="btn btn-small btn-primary profile-load-btn">
                                     Charger
                                 </button>
-                                <button class="btn btn-small btn-danger" onclick="tuner.deleteProfile('${name}')">
+                                <button class="btn btn-small btn-danger profile-delete-btn">
                                     🗑️
                                 </button>
                             </div>
@@ -1418,6 +1420,23 @@
                 }
                 
                 listEl.innerHTML = html;
+                
+                // Add event listeners using event delegation
+                listEl.querySelectorAll('.profile-load-btn').forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        const profileItem = btn.closest('.profile-item');
+                        const name = profileItem.dataset.profileName;
+                        this.loadProfile(name);
+                    });
+                });
+                
+                listEl.querySelectorAll('.profile-delete-btn').forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        const profileItem = btn.closest('.profile-item');
+                        const name = profileItem.dataset.profileName;
+                        this.deleteProfile(name);
+                    });
+                });
             }
 
             deleteProfile(name) {
@@ -1441,6 +1460,16 @@
                 } else {
                     el.textContent = 'Aucun profil actif';
                 }
+            }
+
+            // ========================================
+            // UTILITY FUNCTIONS
+            // ========================================
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
 
             // ========================================
