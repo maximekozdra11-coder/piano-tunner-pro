@@ -1,92 +1,1512 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano Tuner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🎹 Piano Tuner Pro</title>
     <style>
-        /* Basic styles for UI */
-        body { font-family: Arial, sans-serif; }
-        .button { margin: 5px; padding: 10px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .progress { margin-top: 20px; }
-        .ui-card { margin: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        /* CSS Variables */
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-light: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--danger);
+            animation: pulse 2s infinite;
+        }
+
+        .status.active .status-dot {
+            background: var(--success);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Note Display */
+        .note-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .note-name {
+            font-size: 4em;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 2px 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .note-octave {
+            font-size: 1.2em;
+            color: var(--text-muted);
+            margin-top: -10px;
+        }
+
+        /* Canvas */
+        canvas {
+            width: 100%;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .canvas-container {
+            margin: 20px 0;
+        }
+
+        /* Cents Value */
+        .cents-value {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .cents-value.perfect { color: var(--success); }
+        .cents-value.close { color: var(--warning); }
+        .cents-value.far { color: var(--danger); }
+
+        /* Frequency Info */
+        .freq-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .freq-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .freq-label {
+            display: block;
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .freq-value {
+            display: block;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-secondary {
+            background: var(--text-muted);
+        }
+
+        .btn-large {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        /* Button Grid */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        /* Calibration Section */
+        .calibration-panel {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .calibration-progress {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        .calibration-step {
+            font-size: 1.2em;
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Profile Management */
+        .profile-list {
+            margin-top: 15px;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .profile-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-item.active {
+            border: 2px solid var(--success);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .profile-date {
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .active-profile-indicator {
+            text-align: center;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid var(--success);
+            font-weight: bold;
+        }
+
+        /* Instructions */
+        details {
+            margin: 20px 0;
+        }
+
+        summary {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: '▶';
+            transition: transform 0.3s;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .info-content {
+            padding: 15px;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .info-content ul, .info-content ol {
+            margin-left: 20px;
+        }
+
+        .info-content li {
+            margin: 8px 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none;
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1>Piano Tuner</h1>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎹 Piano Tuner Pro</h1>
+            <div class="status" id="status">
+                <span class="status-dot"></span>
+                <span id="status-text">Prêt</span>
+            </div>
+        </div>
 
-    <div class="ui-card">
-        <button class="button" id="calibrationMode">Mode Calibration</button>
-        <button class="button" id="saveProfile">Sauvegarder Profil</button>
-        <button class="button" id="loadProfile">Charger Profil</button>
-        <button class="button" id="listProfiles">Liste des Profils</button>
-    </div>
+        <!-- Main Tuning Card -->
+        <div class="card">
+            <h2>🎵 Accordage</h2>
+            
+            <!-- Note Display -->
+            <div class="note-display">
+                <div class="note-name" id="note-name">--</div>
+                <div class="note-octave" id="note-octave"></div>
+            </div>
 
-    <div class="progress">
-        <h3>Calibration Progress:</h3>
-        <div id="calibrationStatus"></div>
+            <!-- Cents Meter -->
+            <div class="canvas-container">
+                <canvas id="cents-meter" width="600" height="150"></canvas>
+                <div class="cents-value" id="cents-value">-- cents</div>
+            </div>
+
+            <!-- Frequency Info -->
+            <div class="freq-info">
+                <div class="freq-item">
+                    <span class="freq-label">Mesurée</span>
+                    <span class="freq-value" id="freq-measured">-- Hz</span>
+                </div>
+                <div class="freq-item">
+                    <span class="freq-label">Cible</span>
+                    <span class="freq-value" id="freq-target">-- Hz</span>
+                </div>
+            </div>
+
+            <!-- Spectrum -->
+            <div class="canvas-container">
+                <h3>Spectre audio</h3>
+                <canvas id="spectrum" width="600" height="200"></canvas>
+            </div>
+
+            <!-- Control Buttons -->
+            <button id="start-btn" class="btn btn-primary btn-large">
+                🎤 Démarrer
+            </button>
+            <button id="stop-btn" class="btn btn-secondary btn-large hidden">
+                ⏹ Arrêter
+            </button>
+        </div>
+
+        <!-- Calibration Card -->
+        <div class="card">
+            <h2>📊 Calibration</h2>
+            <p class="text-muted mb-20">Mesurez l'inharmonicité de votre piano pour un accordage précis.</p>
+            
+            <button id="calib-mode-btn" class="btn btn-warning btn-large">
+                📊 Mode Calibration
+            </button>
+
+            <div id="calib-panel" class="calibration-panel hidden">
+                <div class="calibration-progress">
+                    <div id="calib-step" class="calibration-step">
+                        Cliquez sur "Démarrer la calibration" pour commencer
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div id="calib-status"></div>
+                </div>
+
+                <div class="btn-grid">
+                    <button id="calib-start-btn" class="btn btn-success">
+                        ▶️ Démarrer
+                    </button>
+                    <button id="calib-next-btn" class="btn btn-primary hidden">
+                        ➡️ Suivant
+                    </button>
+                    <button id="calib-cancel-btn" class="btn btn-danger">
+                        ❌ Annuler
+                    </button>
+                </div>
+
+                <button id="save-profile-btn" class="btn btn-success btn-large mt-20 hidden">
+                    💾 Sauvegarder Profil
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Management Card -->
+        <div class="card">
+            <h2>📂 Gestion des Profils</h2>
+            
+            <div id="active-profile" class="active-profile-indicator">
+                Aucun profil actif
+            </div>
+
+            <div class="btn-grid">
+                <button id="load-profile-btn" class="btn btn-primary">
+                    📂 Charger
+                </button>
+                <button id="list-profiles-btn" class="btn btn-primary">
+                    📋 Liste
+                </button>
+            </div>
+
+            <div id="profile-list" class="profile-list hidden"></div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="card">
+            <details>
+                <summary>ℹ️ Instructions</summary>
+                <div class="info-content">
+                    <h3>Comment utiliser:</h3>
+                    <ol>
+                        <li>Cliquez sur <strong>"Démarrer"</strong></li>
+                        <li>Autorisez l'accès au microphone</li>
+                        <li>Jouez une note sur votre piano</li>
+                        <li>Observez l'écart en cents</li>
+                        <li>Ajustez jusqu'à obtenir <span style="color: var(--success)">0 cents</span></li>
+                    </ol>
+                    <h3>Code couleur:</h3>
+                    <ul>
+                        <li><span style="color: var(--success)">● Vert:</span> &lt; 5 cents (parfait)</li>
+                        <li><span style="color: var(--warning)">● Orange:</span> &lt; 15 cents (proche)</li>
+                        <li><span style="color: var(--danger)">● Rouge:</span> &gt; 15 cents (ajuster)</li>
+                    </ul>
+                    <h3>Calibration:</h3>
+                    <p>Le mode calibration vous permet de mesurer l'inharmonicité réelle de votre piano pour un accordage plus précis. Suivez les instructions à l'écran et jouez les notes demandées.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Piano Tuner Pro</strong> - Version Standalone</p>
+            <p>100% Client-Side - Fonctionne offline</p>
+        </div>
     </div>
 
     <script>
-        const profiles = {};
-        let currentProfileName = '';
+        // ========================================
+        // PIANO TUNER PRO - JAVASCRIPT
+        // ========================================
 
-        // Function to calculate B coefficient
-        function calculateBCoefficient(partials) {
-            // Placeholder for B coefficient calculation logic
-            return partials.reduce((sum, p) => sum + (p.frequency * p.frequency), 0);
+        class PianoTuner {
+            constructor() {
+                // Audio context
+                this.audioContext = null;
+                this.mediaStream = null;
+                this.analyser = null;
+                this.processor = null;
+                this.isRunning = false;
+                
+                // Parameters
+                this.sampleRate = 44100;
+                this.bufferSize = 8192;
+                this.audioBuffer = [];
+                this.yinThreshold = 0.1;
+                
+                // Calibration
+                this.calibrationMode = false;
+                this.calibrationData = [];
+                this.calibrationNotes = [21, 33, 45, 60, 69, 72, 84, 96, 108]; // A0, A1, A2, C4, A4, C5, C6, C7, C8
+                this.calibrationIndex = 0;
+                this.currentCalibrationMeasurements = [];
+                
+                // Profile
+                this.activeProfile = null;
+                this.profiles = {};
+                
+                // UI references
+                this.setupUI();
+                
+                // Load profiles from localStorage
+                this.loadProfilesFromStorage();
+            }
+
+            setupUI() {
+                // Get UI elements
+                this.noteName = document.getElementById('note-name');
+                this.noteOctave = document.getElementById('note-octave');
+                this.centsValue = document.getElementById('cents-value');
+                this.freqMeasured = document.getElementById('freq-measured');
+                this.freqTarget = document.getElementById('freq-target');
+                this.statusText = document.getElementById('status-text');
+                this.status = document.getElementById('status');
+                
+                // Canvases
+                this.centsMeterCanvas = document.getElementById('cents-meter');
+                this.centsMeterCtx = this.centsMeterCanvas.getContext('2d');
+                this.spectrumCanvas = document.getElementById('spectrum');
+                this.spectrumCtx = this.spectrumCanvas.getContext('2d');
+                
+                // Buttons
+                document.getElementById('start-btn').addEventListener('click', () => this.start());
+                document.getElementById('stop-btn').addEventListener('click', () => this.stop());
+                
+                // Calibration buttons
+                document.getElementById('calib-mode-btn').addEventListener('click', () => this.toggleCalibrationMode());
+                document.getElementById('calib-start-btn').addEventListener('click', () => this.startCalibration());
+                document.getElementById('calib-next-btn').addEventListener('click', () => this.nextCalibrationStep());
+                document.getElementById('calib-cancel-btn').addEventListener('click', () => this.cancelCalibration());
+                document.getElementById('save-profile-btn').addEventListener('click', () => this.saveProfile());
+                
+                // Profile buttons
+                document.getElementById('load-profile-btn').addEventListener('click', () => this.showLoadProfile());
+                document.getElementById('list-profiles-btn').addEventListener('click', () => this.toggleProfileList());
+            }
+
+            // ========================================
+            // AUDIO PROCESSING
+            // ========================================
+
+            async start() {
+                try {
+                    // Create audio context
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.audioContext = new AudioContext({ sampleRate: this.sampleRate });
+                    this.sampleRate = this.audioContext.sampleRate;
+
+                    // Request microphone access
+                    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: false,
+                            sampleRate: this.sampleRate
+                        }
+                    });
+
+                    // Create audio graph
+                    const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 8192;
+                    
+                    this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+                    
+                    source.connect(this.analyser);
+                    this.analyser.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+                    
+                    // Process audio
+                    this.processor.onaudioprocess = (e) => this.processAudio(e);
+                    
+                    this.isRunning = true;
+                    this.updateStatus(true, 'En cours...');
+                    
+                    // Update UI
+                    document.getElementById('start-btn').classList.add('hidden');
+                    document.getElementById('stop-btn').classList.remove('hidden');
+                    
+                } catch (error) {
+                    console.error('Error starting audio:', error);
+                    alert('Erreur: Impossible d\'accéder au microphone. ' + error.message);
+                }
+            }
+
+            stop() {
+                this.isRunning = false;
+                
+                if (this.processor) {
+                    this.processor.disconnect();
+                    this.processor = null;
+                }
+                
+                if (this.analyser) {
+                    this.analyser.disconnect();
+                    this.analyser = null;
+                }
+                
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                    this.mediaStream = null;
+                }
+                
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+                
+                this.audioBuffer = [];
+                this.updateStatus(false, 'Arrêté');
+                
+                // Update UI
+                document.getElementById('start-btn').classList.remove('hidden');
+                document.getElementById('stop-btn').classList.add('hidden');
+            }
+
+            processAudio(e) {
+                if (!this.isRunning) return;
+                
+                const inputData = e.inputBuffer.getChannelData(0);
+                
+                // Add to buffer
+                this.audioBuffer.push(...inputData);
+                
+                // Keep only bufferSize samples
+                if (this.audioBuffer.length > this.bufferSize) {
+                    this.audioBuffer = this.audioBuffer.slice(-this.bufferSize);
+                }
+                
+                // Detect pitch
+                if (this.audioBuffer.length >= this.bufferSize) {
+                    const frequency = this.detectPitchYIN(this.audioBuffer);
+                    
+                    if (frequency !== null) {
+                        this.updateDisplay(frequency);
+                    }
+                    
+                    // Draw spectrum
+                    this.drawSpectrum();
+                }
+            }
+
+            // ========================================
+            // YIN PITCH DETECTION ALGORITHM
+            // ========================================
+
+            detectPitchYIN(buffer) {
+                // Normalize
+                const mean = buffer.reduce((sum, val) => sum + val, 0) / buffer.length;
+                const normalized = buffer.map(val => val - mean);
+                
+                // Difference function
+                const diff = this.differenceFunction(normalized);
+                
+                // CMNDF
+                const cmndf = this.cumulativeMeanNormalizedDifference(diff);
+                
+                // Find minimum below threshold
+                const tau = this.absoluteThreshold(cmndf, this.yinThreshold);
+                
+                if (tau === 0) return null;
+                
+                // Parabolic interpolation
+                const betterTau = this.parabolicInterpolation(cmndf, tau);
+                
+                // Convert to frequency
+                const frequency = this.sampleRate / betterTau;
+                
+                // Filter unrealistic frequencies for piano (27.5 Hz - 4186 Hz)
+                if (frequency < 20 || frequency > 5000) return null;
+                
+                return frequency;
+            }
+
+            differenceFunction(buffer) {
+                const halfSize = Math.floor(buffer.length / 2);
+                const diff = new Array(halfSize).fill(0);
+                
+                for (let tau = 1; tau < halfSize; tau++) {
+                    for (let i = 0; i < halfSize; i++) {
+                        const delta = buffer[i] - buffer[i + tau];
+                        diff[tau] += delta * delta;
+                    }
+                }
+                
+                return diff;
+            }
+
+            cumulativeMeanNormalizedDifference(diff) {
+                const cmndf = new Array(diff.length).fill(0);
+                cmndf[0] = 1;
+                
+                let cumulativeSum = 0;
+                for (let tau = 1; tau < diff.length; tau++) {
+                    cumulativeSum += diff[tau];
+                    if (cumulativeSum === 0) {
+                        cmndf[tau] = 1;
+                    } else {
+                        cmndf[tau] = diff[tau] * tau / cumulativeSum;
+                    }
+                }
+                
+                return cmndf;
+            }
+
+            absoluteThreshold(cmndf, threshold) {
+                let tau = 2;
+                
+                while (tau < cmndf.length) {
+                    if (cmndf[tau] < threshold) {
+                        while (tau + 1 < cmndf.length && cmndf[tau + 1] < cmndf[tau]) {
+                            tau++;
+                        }
+                        return tau;
+                    }
+                    tau++;
+                }
+                
+                // Return minimum if no threshold crossing found
+                if (cmndf.length > 2) {
+                    let minIdx = 2;
+                    let minVal = cmndf[2];
+                    for (let i = 3; i < cmndf.length; i++) {
+                        if (cmndf[i] < minVal) {
+                            minVal = cmndf[i];
+                            minIdx = i;
+                        }
+                    }
+                    return minIdx;
+                }
+                
+                return 0;
+            }
+
+            parabolicInterpolation(cmndf, tau) {
+                if (tau === 0 || tau >= cmndf.length - 1) return tau;
+                
+                const x0 = tau - 1, x1 = tau, x2 = tau + 1;
+                const y0 = cmndf[x0], y1 = cmndf[x1], y2 = cmndf[x2];
+                
+                const denom = 2 * (2 * y1 - y0 - y2);
+                if (Math.abs(denom) < 1e-10) return tau;
+                
+                return tau + (y2 - y0) / denom;
+            }
+
+            // ========================================
+            // MIDI CONVERSION
+            // ========================================
+
+            frequencyToMidi(frequency) {
+                if (!frequency || frequency <= 0) return null;
+                return 69 + 12 * Math.log2(frequency / 440.0);
+            }
+
+            midiToFrequency(midi) {
+                return 440.0 * Math.pow(2, (midi - 69) / 12.0);
+            }
+
+            midiToNoteName(midi) {
+                const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                const octave = Math.floor(midi / 12) - 1;
+                const note = noteNames[midi % 12];
+                return `${note}${octave}`;
+            }
+
+            // ========================================
+            // STRETCH MODEL & B COEFFICIENT
+            // ========================================
+
+            getDefaultB(midiNote) {
+                // Default B values - increases at extremes
+                const centerNote = 69; // A4
+                const distance = Math.abs(midiNote - centerNote);
+                const B_min = 0.0001;
+                const B_max = 0.0005;
+                return B_min + (B_max - B_min) * Math.pow(distance / 40.0, 2);
+            }
+
+            getCalibrationB(midiNote) {
+                if (!this.activeProfile || !this.activeProfile.calibration || this.activeProfile.calibration.length === 0) {
+                    return this.getDefaultB(midiNote);
+                }
+                
+                // Interpolate from calibration data
+                const calib = this.activeProfile.calibration;
+                
+                // Find surrounding points
+                let lower = null, upper = null;
+                for (let i = 0; i < calib.length; i++) {
+                    if (calib[i].midi <= midiNote) {
+                        lower = calib[i];
+                    }
+                    if (calib[i].midi >= midiNote && !upper) {
+                        upper = calib[i];
+                    }
+                }
+                
+                // Exact match
+                if (lower && lower.midi === midiNote) return lower.B;
+                if (upper && upper.midi === midiNote) return upper.B;
+                
+                // Interpolate
+                if (lower && upper) {
+                    const ratio = (midiNote - lower.midi) / (upper.midi - lower.midi);
+                    return lower.B + ratio * (upper.B - lower.B);
+                }
+                
+                // Extrapolate
+                if (lower && !upper) return lower.B;
+                if (!lower && upper) return upper.B;
+                
+                return this.getDefaultB(midiNote);
+            }
+
+            getTargetFrequency(midiNote) {
+                // Equal temperament frequency
+                const fEqualTemp = this.midiToFrequency(midiNote);
+                
+                // Get B coefficient
+                const B = this.getCalibrationB(midiNote);
+                
+                // Apply stretch: f_target = f_equal * (1 + B*k^2/2)
+                // For fundamental (k=1)
+                const stretch = (B * 1 * 1) / 2.0;
+                
+                return fEqualTemp * (1 + stretch);
+            }
+
+            calculateCents(measuredFreq, targetFreq) {
+                if (measuredFreq <= 0 || targetFreq <= 0) return 0;
+                return 1200 * Math.log2(measuredFreq / targetFreq);
+            }
+
+            // ========================================
+            // DISPLAY UPDATE
+            // ========================================
+
+            updateDisplay(frequency) {
+                const midiFloat = this.frequencyToMidi(frequency);
+                const midiNote = Math.round(midiFloat);
+                const noteName = this.midiToNoteName(midiNote);
+                const targetFreq = this.getTargetFrequency(midiNote);
+                const cents = this.calculateCents(frequency, targetFreq);
+                
+                // Update note display
+                this.updateNoteDisplay(noteName);
+                
+                // Update frequencies
+                this.freqMeasured.textContent = `${frequency.toFixed(2)} Hz`;
+                this.freqTarget.textContent = `${targetFreq.toFixed(2)} Hz`;
+                
+                // Update cents
+                this.centsValue.textContent = `${cents > 0 ? '+' : ''}${cents.toFixed(1)} cents`;
+                this.updateCentsClass(cents);
+                
+                // Draw cents meter
+                this.drawCentsMeter(cents);
+                
+                // Calibration mode
+                if (this.calibrationMode) {
+                    this.processCalibrationMeasurement(frequency, midiNote);
+                }
+            }
+
+            updateNoteDisplay(noteName) {
+                const match = noteName.match(/^([A-G]#?)(\d+)$/);
+                if (match) {
+                    this.noteName.textContent = match[1];
+                    this.noteOctave.textContent = `Octave ${match[2]}`;
+                } else {
+                    this.noteName.textContent = noteName;
+                    this.noteOctave.textContent = '';
+                }
+            }
+
+            updateCentsClass(cents) {
+                this.centsValue.classList.remove('perfect', 'close', 'far');
+                if (Math.abs(cents) < 5) {
+                    this.centsValue.classList.add('perfect');
+                } else if (Math.abs(cents) < 15) {
+                    this.centsValue.classList.add('close');
+                } else {
+                    this.centsValue.classList.add('far');
+                }
+            }
+
+            updateStatus(active, text) {
+                if (active) {
+                    this.status.classList.add('active');
+                } else {
+                    this.status.classList.remove('active');
+                }
+                this.statusText.textContent = text;
+            }
+
+            // ========================================
+            // CANVAS DRAWING
+            // ========================================
+
+            drawCentsMeter(cents) {
+                const canvas = this.centsMeterCanvas;
+                const ctx = this.centsMeterCtx;
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // Limit cents to ±50
+                cents = Math.max(-50, Math.min(50, cents));
+                
+                // Clear
+                ctx.clearRect(0, 0, width, height);
+                
+                // Background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(0, 0, width, height);
+                
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const meterWidth = width - 120;
+                const startX = 60;
+                
+                // Base line
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(startX, centerY);
+                ctx.lineTo(startX + meterWidth, centerY);
+                ctx.stroke();
+                
+                // Graduations
+                ctx.font = 'bold 20px -apple-system, sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                ctx.textAlign = 'center';
+                
+                for (let c = -50; c <= 50; c += 25) {
+                    const x = centerX + (c / 50) * (meterWidth / 2);
+                    ctx.strokeStyle = '#475569';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x, centerY - 15);
+                    ctx.lineTo(x, centerY + 15);
+                    ctx.stroke();
+                    
+                    ctx.fillText(c > 0 ? `+${c}` : c, x, centerY + 40);
+                }
+                
+                // Center line (0)
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - 25);
+                ctx.lineTo(centerX, centerY + 25);
+                ctx.stroke();
+                
+                // Needle
+                const needleX = centerX + (cents / 50) * (meterWidth / 2);
+                
+                // Needle color
+                let needleColor;
+                if (Math.abs(cents) < 5) {
+                    needleColor = '#10b981'; // Green
+                } else if (Math.abs(cents) < 15) {
+                    needleColor = '#f59e0b'; // Orange
+                } else {
+                    needleColor = '#ef4444'; // Red
+                }
+                
+                ctx.strokeStyle = needleColor;
+                ctx.fillStyle = needleColor;
+                ctx.lineWidth = 4;
+                
+                // Needle line
+                ctx.beginPath();
+                ctx.moveTo(needleX, centerY - 35);
+                ctx.lineTo(needleX, centerY + 35);
+                ctx.stroke();
+                
+                // Needle circle
+                ctx.beginPath();
+                ctx.arc(needleX, centerY, 10, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            drawSpectrum() {
+                if (!this.analyser) return;
+                
+                const canvas = this.spectrumCanvas;
+                const ctx = this.spectrumCtx;
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // Get frequency data
+                const bufferLength = this.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                // Clear
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw spectrum
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                const sliceWidth = width / bufferLength;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 255.0;
+                    const y = height - (v * height * 0.8) - 10;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                ctx.stroke();
+                
+                // Grid
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+                ctx.lineWidth = 1;
+                
+                for (let i = 0; i < 4; i++) {
+                    const y = (i / 3) * height;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+            }
+
+            // ========================================
+            // CALIBRATION MODE
+            // ========================================
+
+            toggleCalibrationMode() {
+                const panel = document.getElementById('calib-panel');
+                panel.classList.toggle('hidden');
+            }
+
+            startCalibration() {
+                if (!this.isRunning) {
+                    alert('Veuillez démarrer l\'accordeur avant de commencer la calibration.');
+                    return;
+                }
+                
+                this.calibrationMode = true;
+                this.calibrationIndex = 0;
+                this.calibrationData = [];
+                this.currentCalibrationMeasurements = [];
+                
+                this.updateCalibrationUI();
+                
+                document.getElementById('calib-start-btn').classList.add('hidden');
+                document.getElementById('calib-next-btn').classList.remove('hidden');
+            }
+
+            nextCalibrationStep() {
+                if (this.currentCalibrationMeasurements.length < 10) {
+                    alert('Jouez la note pendant au moins 2-3 secondes pour obtenir une mesure stable.');
+                    return;
+                }
+                
+                // Calculate average B for this note
+                const avgB = this.currentCalibrationMeasurements.reduce((sum, b) => sum + b, 0) / 
+                             this.currentCalibrationMeasurements.length;
+                
+                const midiNote = this.calibrationNotes[this.calibrationIndex];
+                const noteName = this.midiToNoteName(midiNote);
+                
+                this.calibrationData.push({
+                    midi: midiNote,
+                    note: noteName,
+                    B: avgB
+                });
+                
+                // Move to next note
+                this.calibrationIndex++;
+                this.currentCalibrationMeasurements = [];
+                
+                if (this.calibrationIndex >= this.calibrationNotes.length) {
+                    this.finishCalibration();
+                } else {
+                    this.updateCalibrationUI();
+                }
+            }
+
+            finishCalibration() {
+                this.calibrationMode = false;
+                
+                document.getElementById('calib-step').innerHTML = `
+                    <strong>✅ Calibration terminée!</strong><br>
+                    ${this.calibrationData.length} notes mesurées.<br>
+                    Cliquez sur "Sauvegarder Profil" pour enregistrer.
+                `;
+                
+                document.getElementById('calib-next-btn').classList.add('hidden');
+                document.getElementById('save-profile-btn').classList.remove('hidden');
+                
+                const progress = document.getElementById('progress-fill');
+                progress.style.width = '100%';
+            }
+
+            cancelCalibration() {
+                this.calibrationMode = false;
+                this.calibrationIndex = 0;
+                this.calibrationData = [];
+                this.currentCalibrationMeasurements = [];
+                
+                document.getElementById('calib-panel').classList.add('hidden');
+                document.getElementById('calib-start-btn').classList.remove('hidden');
+                document.getElementById('calib-next-btn').classList.add('hidden');
+                document.getElementById('save-profile-btn').classList.add('hidden');
+            }
+
+            updateCalibrationUI() {
+                const totalNotes = this.calibrationNotes.length;
+                const currentStep = this.calibrationIndex + 1;
+                const midiNote = this.calibrationNotes[this.calibrationIndex];
+                const noteName = this.midiToNoteName(midiNote);
+                
+                document.getElementById('calib-step').innerHTML = `
+                    <strong>Étape ${currentStep}/${totalNotes}</strong><br>
+                    Jouez la note: <strong style="font-size: 1.5em">${noteName}</strong><br>
+                    <small>Maintenez la note stable pendant 2-3 secondes</small>
+                `;
+                
+                const progress = (this.calibrationIndex / totalNotes) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                
+                document.getElementById('calib-status').textContent = 
+                    `Mesures: ${this.currentCalibrationMeasurements.length}`;
+            }
+
+            processCalibrationMeasurement(frequency, detectedMidi) {
+                const targetMidi = this.calibrationNotes[this.calibrationIndex];
+                
+                // Check if detected note is close to target (within 1 semitone)
+                if (Math.abs(detectedMidi - targetMidi) <= 1) {
+                    // Estimate B coefficient for this note
+                    const B = this.estimateInharmonicity(frequency);
+                    
+                    if (B !== null && B > 0 && B < 0.001) {
+                        this.currentCalibrationMeasurements.push(B);
+                        
+                        // Update UI
+                        document.getElementById('calib-status').textContent = 
+                            `Mesures: ${this.currentCalibrationMeasurements.length} ✓`;
+                    }
+                }
+            }
+
+            estimateInharmonicity(fundamentalFreq) {
+                if (!this.analyser) return null;
+                
+                // Get FFT data
+                const bufferLength = this.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                // Detect partials
+                const partials = this.detectPartials(dataArray, fundamentalFreq);
+                
+                if (partials.length < 3) return null;
+                
+                // Calculate B from partials
+                return this.computeBFromPartials(partials, fundamentalFreq);
+            }
+
+            detectPartials(fftData, fundamentalFreq) {
+                const partials = [];
+                const nyquist = this.sampleRate / 2;
+                const binWidth = nyquist / fftData.length;
+                
+                // Look for up to 6 partials
+                for (let k = 1; k <= 6; k++) {
+                    const expectedFreq = k * fundamentalFreq;
+                    
+                    if (expectedFreq > nyquist) break;
+                    
+                    // Search window ±5%
+                    const searchRange = expectedFreq * 0.05;
+                    const minBin = Math.floor((expectedFreq - searchRange) / binWidth);
+                    const maxBin = Math.ceil((expectedFreq + searchRange) / binWidth);
+                    
+                    // Find peak in this range
+                    let peakBin = minBin;
+                    let peakMag = fftData[minBin];
+                    
+                    for (let bin = minBin; bin <= maxBin && bin < fftData.length; bin++) {
+                        if (fftData[bin] > peakMag) {
+                            peakMag = fftData[bin];
+                            peakBin = bin;
+                        }
+                    }
+                    
+                    // Check if peak is significant
+                    const avgMag = fftData.reduce((sum, val) => sum + val, 0) / fftData.length;
+                    if (peakMag > avgMag * 2) {
+                        const peakFreq = peakBin * binWidth;
+                        partials.push({ k: k, freq: peakFreq });
+                    }
+                }
+                
+                return partials;
+            }
+
+            computeBFromPartials(partials, fundamentalFreq) {
+                const BValues = [];
+                
+                for (const partial of partials) {
+                    const k = partial.k;
+                    const measuredFreq = partial.freq;
+                    
+                    // Formula: f_k = f0 * k * sqrt(1 + B*k^2)
+                    // Solve for B: B = ((f_k / (k*f0))^2 - 1) / k^2
+                    const ratio = measuredFreq / (k * fundamentalFreq);
+                    if (ratio > 0) {
+                        const B = (ratio * ratio - 1) / (k * k);
+                        
+                        // Filter realistic values
+                        if (B >= 0 && B <= 0.001) {
+                            BValues.push(B);
+                        }
+                    }
+                }
+                
+                if (BValues.length === 0) return null;
+                
+                // Return average
+                return BValues.reduce((sum, b) => sum + b, 0) / BValues.length;
+            }
+
+            // ========================================
+            // PROFILE MANAGEMENT
+            // ========================================
+
+            saveProfile() {
+                const name = prompt('Nom du profil:', 'Mon Piano');
+                if (!name) return;
+                
+                const profile = {
+                    date: new Date().toISOString().split('T')[0],
+                    calibration: this.calibrationData
+                };
+                
+                this.profiles[name] = profile;
+                this.saveProfilesToStorage();
+                
+                alert(`Profil "${name}" sauvegardé avec succès!`);
+                
+                // Reset calibration UI
+                this.cancelCalibration();
+                
+                // Load the new profile
+                this.loadProfile(name);
+            }
+
+            loadProfile(name) {
+                if (!this.profiles[name]) {
+                    alert('Profil non trouvé!');
+                    return;
+                }
+                
+                this.activeProfile = { name: name, ...this.profiles[name] };
+                this.updateActiveProfileDisplay();
+                
+                alert(`Profil "${name}" chargé!`);
+            }
+
+            showLoadProfile() {
+                const names = Object.keys(this.profiles);
+                
+                if (names.length === 0) {
+                    alert('Aucun profil sauvegardé.');
+                    return;
+                }
+                
+                const name = prompt('Profils disponibles:\n' + names.join('\n') + '\n\nEntrez le nom du profil à charger:');
+                
+                if (name && this.profiles[name]) {
+                    this.loadProfile(name);
+                }
+            }
+
+            toggleProfileList() {
+                const listEl = document.getElementById('profile-list');
+                listEl.classList.toggle('hidden');
+                
+                if (!listEl.classList.contains('hidden')) {
+                    this.renderProfileList();
+                }
+            }
+
+            renderProfileList() {
+                const listEl = document.getElementById('profile-list');
+                const names = Object.keys(this.profiles);
+                
+                if (names.length === 0) {
+                    listEl.innerHTML = '<p class="text-center text-muted">Aucun profil sauvegardé</p>';
+                    return;
+                }
+                
+                let html = '';
+                for (const name of names) {
+                    const profile = this.profiles[name];
+                    const isActive = this.activeProfile && this.activeProfile.name === name;
+                    // Escape HTML to prevent XSS
+                    const escapedName = this.escapeHtml(name);
+                    
+                    html += `
+                        <div class="profile-item ${isActive ? 'active' : ''}" data-profile-name="${escapedName}">
+                            <div class="profile-info">
+                                <div class="profile-name">${escapedName}</div>
+                                <div class="profile-date">${profile.date} - ${profile.calibration.length} notes</div>
+                            </div>
+                            <div>
+                                <button class="btn btn-small btn-primary profile-load-btn">
+                                    Charger
+                                </button>
+                                <button class="btn btn-small btn-danger profile-delete-btn">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                listEl.innerHTML = html;
+                
+                // Add event listeners using event delegation
+                listEl.querySelectorAll('.profile-load-btn').forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        const profileItem = btn.closest('.profile-item');
+                        const name = profileItem.dataset.profileName;
+                        this.loadProfile(name);
+                    });
+                });
+                
+                listEl.querySelectorAll('.profile-delete-btn').forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        const profileItem = btn.closest('.profile-item');
+                        const name = profileItem.dataset.profileName;
+                        this.deleteProfile(name);
+                    });
+                });
+            }
+
+            deleteProfile(name) {
+                if (!confirm(`Supprimer le profil "${name}"?`)) return;
+                
+                delete this.profiles[name];
+                this.saveProfilesToStorage();
+                
+                if (this.activeProfile && this.activeProfile.name === name) {
+                    this.activeProfile = null;
+                    this.updateActiveProfileDisplay();
+                }
+                
+                this.renderProfileList();
+            }
+
+            updateActiveProfileDisplay() {
+                const el = document.getElementById('active-profile');
+                if (this.activeProfile) {
+                    el.textContent = `📌 Profil actif: ${this.activeProfile.name}`;
+                } else {
+                    el.textContent = 'Aucun profil actif';
+                }
+            }
+
+            // ========================================
+            // UTILITY FUNCTIONS
+            // ========================================
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // ========================================
+            // LOCAL STORAGE
+            // ========================================
+
+            loadProfilesFromStorage() {
+                try {
+                    const data = localStorage.getItem('pianoTunerProfiles');
+                    if (data) {
+                        this.profiles = JSON.parse(data);
+                    }
+                } catch (error) {
+                    console.error('Error loading profiles:', error);
+                }
+            }
+
+            saveProfilesToStorage() {
+                try {
+                    localStorage.setItem('pianoTunerProfiles', JSON.stringify(this.profiles));
+                } catch (error) {
+                    console.error('Error saving profiles:', error);
+                    alert('Erreur lors de la sauvegarde du profil.');
+                }
+            }
         }
 
-        // Start calibration
-        document.getElementById('calibrationMode').addEventListener('click', function() {
-            const notesMeasured = [];
-            for (let note of availableNotes) {  // Assume availableNotes is defined 
-                const bCoefficient = calculateBCoefficient(note.partials);
-                notesMeasured.push({ note: note.name, b: bCoefficient });
-                document.getElementById('calibrationStatus').innerText += `Measured ${note.name}: B Coefficient = ${bCoefficient}\n`;
-            }
-            applyStretchCurve(notesMeasured);
+        // ========================================
+        // INITIALIZE
+        // ========================================
+
+        let tuner;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            tuner = new PianoTuner();
+            console.log('Piano Tuner Pro initialized');
         });
-
-        // Save profile
-        document.getElementById('saveProfile').addEventListener('click', function() {
-            const profileName = prompt('Enter profile name:');
-            if (profileName) {
-                profiles[profileName] = { notes: notesMeasured }; // Save current notes
-                localStorage.setItem('pianoProfiles', JSON.stringify(profiles));
-                alert('Profile saved!');
-            }
-        });
-
-        // Load profile
-        document.getElementById('loadProfile').addEventListener('click', function() {
-            const profileName = prompt('Enter profile name to load:');
-            if (profiles[profileName]) {
-                currentProfileName = profileName;
-                alert(`Loaded profile: ${profileName}`);
-            } else {
-                alert('Profile not found!');
-            }
-        });
-
-        // List profiles
-        document.getElementById('listProfiles').addEventListener('click', function() {
-            alert('Available profiles: ' + Object.keys(profiles).join(', '));
-        });
-
-        // Define function to apply stretch curve based on calibration
-        function applyStretchCurve(notes) {
-            // Placeholder for stretch curve application logic
-            console.log('Applying stretch curve based on measured notes:', notes);
-        }
-
-        // Load profiles from localStorage
-        window.onload = () => {
-            const savedProfiles = localStorage.getItem('pianoProfiles');
-            if (savedProfiles) {
-                Object.assign(profiles, JSON.parse(savedProfiles));
-            }
-        };
     </script>
 </body>
 </html>
