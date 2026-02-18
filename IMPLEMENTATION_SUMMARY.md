@@ -173,7 +173,7 @@ Total: ~1,400 lines of production code
 - Robust pitch detection even with noise
 - Parabolic interpolation for sub-sample accuracy
 - Threshold-based CMNDF for reliability
-- Piano frequency range: 27.5 Hz (A0) to 4186 Hz (C8)
+- Piano frequency range: 27.5 Hz (A0) to 3520 Hz (A7)
 
 ### Inharmonicity Estimation
 - Analyzes 6 partials by default

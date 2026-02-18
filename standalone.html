@@ -576,7 +576,7 @@
                 // Calibration
                 this.calibrationMode = false;
                 this.calibrationData = [];
-                this.calibrationNotes = [21, 33, 45, 60, 69, 72, 84, 96, 108]; // A0, A1, A2, C4, A4, C5, C6, C7, C8
+                this.calibrationNotes = [21, 33, 45, 57, 69, 81, 93, 105]; // A0, A1, A2, A3, A4, A5, A6, A7
                 this.calibrationIndex = 0;
                 this.currentCalibrationMeasurements = [];
                 
@@ -754,7 +754,7 @@
                 // Convert to frequency
                 const frequency = this.sampleRate / betterTau;
                 
-                // Filter unrealistic frequencies for piano (27.5 Hz - 4186 Hz)
+                // Filter unrealistic frequencies for piano (27.5 Hz - 3520 Hz)
                 if (frequency < 20 || frequency > 5000) return null;
                 
                 return frequency;
