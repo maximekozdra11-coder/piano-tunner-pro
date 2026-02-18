@@ -83,7 +83,7 @@ The `standalone.html` file has been **successfully restored and enhanced** with 
 2. Click "▶️ Démarrer"
 3. Play A0 (lowest note) and wait for 10+ measurements
 4. Click "➡️ Suivant"
-5. Repeat for A1, A2, C4, A4, C5, C6, C7, C8
+5. Repeat for A1, A2, A3, A4, A5, A6, A7
 6. Click "💾 Sauvegarder Profil"
 7. Enter profile name (e.g., "Mon Piano")
 8. Profile is now active!
@@ -118,7 +118,7 @@ Delete: Click "🗑️" next to profile
 
 ### Algorithms
 - **YIN Pitch Detection**: Full implementation with 4 steps
-- **Frequency Range**: 20-5000 Hz (covers A0-C8)
+- **Frequency Range**: 20-5000 Hz (covers A0-A7)
 - **Accuracy**: ±0.2 Hz
 - **B Coefficient Range**: 0.0001-0.0005 (realistic for pianos)
 - **Interpolation**: Linear between calibration points
