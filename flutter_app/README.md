@@ -2,6 +2,17 @@
 
 A professional-grade piano tuning mobile application built with Flutter/Dart.
 
+---
+
+## 🚀 Quick Links
+
+- **📱 [Quick Start Guide](QUICKSTART.md)** - Get started in 5 minutes
+- **📖 [Installation Guide (Français)](INSTALLATION_GUIDE.md)** - Complete step-by-step installation
+- **🔧 [Deployment Guide](DEPLOYMENT_GUIDE.md)** - Technical deployment documentation
+- **💡 [Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Technical architecture details
+
+---
+
 ## Features
 
 ### Core Functionality
