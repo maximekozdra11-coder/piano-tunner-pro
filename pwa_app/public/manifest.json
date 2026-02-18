@@ -1,0 +1,42 @@
+{
+  "name": "Piano Tuner Pro",
+  "short_name": "Piano Tuner",
+  "description": "Accordeur de piano professionnel avec mesure d'inharmonicité",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0f1e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Nouvelle mesure",
+      "short_name": "Mesure",
+      "description": "Mesurer l'inharmonicité d'un piano",
+      "url": "./index.html?action=measure",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Accordage",
+      "short_name": "Accorder",
+      "description": "Mode accordage",
+      "url": "./index.html?action=tune",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

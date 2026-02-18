@@ -1,0 +1,42 @@
+name: piano_tuner_pro
+description: Professional piano tuning application with inharmonicity measurement and adaptive stretch tuning
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Database
+  sqflite: ^2.3.0
+  path_provider: ^2.1.0
+  path: ^1.8.3
+  
+  # Permissions
+  permission_handler: ^11.0.0
+  
+  # Audio capture
+  record: ^5.0.0
+  
+  # Charts and graphs
+  fl_chart: ^0.65.0
+  
+  # State management
+  provider: ^6.1.0
+  
+  # Math and FFT
+  fftea: ^1.0.1
+  
+  # Utilities
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

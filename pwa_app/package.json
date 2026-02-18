@@ -1,0 +1,25 @@
+{
+  "name": "piano-tuner-pro-pwa",
+  "version": "1.0.0",
+  "description": "Professional Piano Tuning Progressive Web App",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python3 -m http.server 8000 --directory dist"
+  },
+  "keywords": [
+    "piano",
+    "tuning",
+    "PWA",
+    "inharmonicity",
+    "music"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {}
+}
